@@ -12,9 +12,12 @@ class Http
         if (count($fakes)==0) {
             throw new \Exception('Fakes should not be empty');
         }
-        foreach ($fakes as $url=>$fake) {
+        foreach ($fakes as $url=>&$fake) {
             if (!is_string($url)) {
                 throw new \Exception('Fakes should be an associative array with url as a key');
+            }
+            if (is_array($fake)) {
+                $fake = new MockResponse(json_encode($fake));
             }
             if (!($fake instanceof MockResponse)) {
                 throw new \Exception('Fakes should be an instance of MockResponse');

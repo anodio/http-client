@@ -2,7 +2,7 @@
   "name": "anodio/http-client",
   "autoload": {
     "psr-4": {
-      "Anodio\\\\HttpClient\\": "src/"
+      "Anodio\\HttpClient\\": "src/"
     }
   },
   "require": {

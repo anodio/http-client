@@ -1,0 +1,12 @@
+{
+  "name": "anodio/http-client",
+  "autoload": {
+    "psr-4": {
+      "Anodio\\\\HttpClient\\": "src/"
+    }
+  },
+  "require": {
+    "symfony/http-client": "^7.1",
+    "anodio/core": "^0.1"
+  }
+}

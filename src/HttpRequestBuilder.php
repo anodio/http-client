@@ -5,14 +5,13 @@ namespace Anodio\HttpClient;
 use Anodio\Core\ContainerStorage;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Component\HttpClient\MockHttpClient;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HttpRequestBuilder
 {
-    private string $url;
+    protected string $url;
 
-    private array $options = [];
+    protected array $options = [];
 
     public function url(string $url): static {
         $this->url = $url;
@@ -124,93 +123,36 @@ class HttpRequestBuilder
         return $this->createClient($this->url)->request($method, $this->url, $this->options);
     }
 
-    private function createTestRequest(string $method): \Symfony\Component\HttpFoundation\Request {
-        if (CONTAINER_NAME!='pest') {
-            throw new \Exception('This method is only for pest tests');
-        }
-
-        $convertedHeaders = [];
-        if (isset($this->options['headers'])) {
-            foreach ($this->options['headers'] as $key => $header) {
-                $convertedHeaders['HTTP_' . $key] = $header[0];
-            }
-        }
-
-        $explodedUrl = explode('?', $this->url);
-
-        $serverParams = array_merge([
-            'REQUEST_URI' => $explodedUrl[0],
-            'REQUEST_METHOD' => $method,
-            'QUERY_STRING' => $explodedUrl[1] ?? '',
-        ], $convertedHeaders);
-        return new \Symfony\Component\HttpFoundation\Request(
-            query: $this->options['query'] ?? [],
-            request: [],
-            attributes: ['transport'=>'http'],
-            cookies: $this->options['cookies'] ?? [],
-            files: $this->options['files'] ?? [],
-            server: $serverParams,
-            content: $this->options['body'] ?? ''
-        );
-    }
-
-    private function sendInnerRequestToCurrentKernel(string $method): \Symfony\Contracts\HttpClient\ResponseInterface {
-        $container = ContainerStorage::getContainer();
-        $kernel = $container->get('kernel');
-        $request = $this->createTestRequest($method);
-        $response = $kernel->handle($request);
-        $kernel->terminate($request, $response);
-        return $response;
-    }
-
     public function get(): \Symfony\Contracts\HttpClient\ResponseInterface {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('GET');
-        }
         return $this->createClient($this->url)->request('GET', $this->url, $this->options);
     }
 
     public function head(): \Symfony\Contracts\HttpClient\ResponseInterface
     {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('HEAD');
-        }
         return $this->createClient($this->url)->request('HEAD', $this->url, $this->options);
     }
 
     public function post(): \Symfony\Contracts\HttpClient\ResponseInterface
     {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('POST');
-        }
         return $this->createClient($this->url)->request('POST', $this->url, $this->options);
     }
 
     public function patch(): \Symfony\Contracts\HttpClient\ResponseInterface
     {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('PATCH');
-        }
         return $this->createClient($this->url)->request('PATCH', $this->url, $this->options);
     }
 
     public function put(): \Symfony\Contracts\HttpClient\ResponseInterface
     {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('PUT');
-        }
         return $this->createClient($this->url)->request('PUT', $this->url, $this->options);
     }
 
     public function delete(): \Symfony\Contracts\HttpClient\ResponseInterface
     {
-        if (CONTAINER_NAME=='pest' && str_starts_with($this->url, '/')) {
-            return $this->sendInnerRequestToCurrentKernel('DELETE');
-        }
         return $this->createClient($this->url)->request('DELETE', $this->url, $this->options);
     }
 
-    private function createClient(?string $url=null): HttpClientInterface {
+    protected function createClient(?string $url=null): HttpClientInterface {
         if (!$url) {
             throw new \Exception('You forgot to specify url');
         }

@@ -131,4 +131,9 @@ class Http
         return new HttpRequestBuilder();
     }
 
+    public static function response(array $array, int $int=200)
+    {
+        return new MockResponse(json_encode($array), ['http_code'=>$int]);
+    }
+
 }

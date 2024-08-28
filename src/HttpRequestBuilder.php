@@ -20,7 +20,7 @@ class HttpRequestBuilder
 
     public function withJson(array $data): static {
         $this->options['body'] = json_encode($data);
-        $this->options['headers'] = array_merge($this->headers, [
+        $this->options['headers'] = array_merge($this->headers??[], [
             'Content-Type' => 'application/json'
         ]);
         return $this;
@@ -37,7 +37,7 @@ class HttpRequestBuilder
     }
 
     public function withOptions(array $options): static {
-        $this->options = array_merge($this->options, $options);
+        $this->options = array_merge($this->options??[], $options);
         return $this;
     }
 
@@ -47,7 +47,7 @@ class HttpRequestBuilder
     }
 
     public function withHeaders(array $headers): static {
-        $this->options['headers'] = $headers;
+        $this->options['headers'] = array_merge($this->options['headers']??[], $headers);
         return $this;
     }
 
@@ -110,6 +110,26 @@ class HttpRequestBuilder
 
     public function contentType(string $contentType): static {
         $this->headers['Content-Type'] = $contentType;
+        return $this;
+    }
+
+    public function bodyFormat(string $format)
+    {
+        if ($format==='json') {
+            $this->options['headers'] = array_merge($this->headers??[], [
+                'Content-Type' => 'application/json'
+            ]);
+        }
+        return $this;
+    }
+
+    public function timeout(int $seconds): static {
+        $this->options['timeout'] = $seconds;
+        return $this;
+    }
+
+    public function connectTimeout(int $seconds): static {
+        $this->options['connect_timeout'] = $seconds;
         return $this;
     }
 }

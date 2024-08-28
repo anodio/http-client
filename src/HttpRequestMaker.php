@@ -14,33 +14,60 @@ class HttpRequestMaker extends HttpRequestBuilder
         return $this->createClient($this->url)->request($method, $this->url, $this->options);
     }
 
-    public function get(): \Symfony\Contracts\HttpClient\ResponseInterface {
-        return $this->createClient($this->url)->request('GET', $this->url, $this->options);
+    /**
+     * @param string $method
+     * @param string $formedUrl
+     * @return ComfortResponseContainer
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     *@deprecated
+     */
+    public function send(string $method, string $formedUrl)
+    {
+        return new ComfortResponseContainer(
+            $this->createClient($formedUrl)->request($method, $formedUrl, $this->options)
+        );
     }
 
-    public function head(): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function get(): ComfortResponseContainer
     {
-        return $this->createClient($this->url)->request('HEAD', $this->url, $this->options);
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('GET', $this->url, $this->options)
+        );
     }
 
-    public function post(): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function head(): ComfortResponseContainer
     {
-        return $this->createClient($this->url)->request('POST', $this->url, $this->options);
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('HEAD', $this->url, $this->options)
+        );
     }
 
-    public function patch(): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function post(): ComfortResponseContainer
     {
-        return $this->createClient($this->url)->request('PATCH', $this->url, $this->options);
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('POST', $this->url, $this->options)
+        );
     }
 
-    public function put(): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function patch(): ComfortResponseContainer
     {
-        return $this->createClient($this->url)->request('PUT', $this->url, $this->options);
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('PATCH', $this->url, $this->options)
+        );
     }
 
-    public function delete(): \Symfony\Contracts\HttpClient\ResponseInterface
+    public function put(): ComfortResponseContainer
     {
-        return $this->createClient($this->url)->request('DELETE', $this->url, $this->options);
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('PUT', $this->url, $this->options)
+        );
+    }
+
+    public function delete(): ComfortResponseContainer
+    {
+        return new ComfortResponseContainer(
+            $this->createClient($this->url)->request('DELETE', $this->url, $this->options)
+        );
     }
 
     protected function createClient(?string $url=null): HttpClientInterface {

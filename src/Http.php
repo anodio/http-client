@@ -12,7 +12,9 @@ class Http
         if (count($fakes)==0) {
             throw new \Exception('Fakes should not be empty');
         }
-        foreach ($fakes as $url=>&$fake) {
+        $container = ContainerStorage::getContainer();
+        $fakesFromContainer = $container->has('http.fakes')?$container->get('http.fakes'):[];
+        foreach ($fakes as $url=>$fake) {
             if (!is_string($url)) {
                 throw new \Exception('Fakes should be an associative array with url as a key');
             }
@@ -22,113 +24,113 @@ class Http
             if (!($fake instanceof MockResponse)) {
                 throw new \Exception('Fakes should be an instance of MockResponse');
             }
+            $fakesFromContainer[$url] = $fake;
         }
-        $container = ContainerStorage::getContainer();
-        $container->set('http.fakes', $fakes);
+        $container->set('http.fakes', $fakesFromContainer);
     }
 
-    public static function url(string $url): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function url(string $url): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->url($url);
     }
 
-    public static function withBody(\Psr\Http\Message\StreamInterface|string $content, string $contentType = 'text/plain'): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withBody(\Psr\Http\Message\StreamInterface|string $content, string $contentType = 'text/plain'): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withBody($content, $contentType);
     }
 
-    public static function withJson(array $data): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withJson(array $data): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withJson($data);
     }
 
-    public static function acceptJson(): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function acceptJson(): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->acceptJson();
     }
 
-    public static function accept(string $contentType): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function accept(string $contentType): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->accept($contentType);
     }
 
-    public static function withOptions(array $options): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withOptions(array $options): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withOptions($options);
     }
 
-    public static function withQueryParameters(array $parameters): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withQueryParameters(array $parameters): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withQueryParameters($parameters);
     }
 
-    public static function withHeaders(array $headers): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withHeaders(array $headers): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withHeaders($headers);
     }
 
-    public static function withHeader(string $name, mixed $value): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withHeader(string $name, mixed $value): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withHeader($name, $value);
     }
 
-    public static function withTimeout(int $seconds): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withTimeout(int $seconds): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withTimeout($seconds);
     }
 
-    public static function withConnectTimeout(int $seconds): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withConnectTimeout(int $seconds): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withConnectTimeout($seconds);
     }
 
-    public static function withBasicAuth(string $username, string $password): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withBasicAuth(string $username, string $password): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withBasicAuth($username, $password);
     }
 
-    public static function withDigestAuth(string $username, string $password): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withDigestAuth(string $username, string $password): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withDigestAuth($username, $password);
     }
 
-    public static function withToken(string $token, string $type = 'Bearer'): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withToken(string $token, string $type = 'Bearer'): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withToken($token, $type);
     }
 
-    public static function withUserAgent(string|bool $userAgent): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withUserAgent(string|bool $userAgent): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withUserAgent($userAgent);
     }
 
-    public static function withCookies(array $cookies, string $domain): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withCookies(array $cookies, string $domain): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withCookies($cookies, $domain);
     }
 
-    public static function maxRedirects(int $max): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function maxRedirects(int $max): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->maxRedirects($max);
     }
 
-    public static function withoutRedirecting(): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withoutRedirecting(): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withoutRedirecting();
     }
 
-    public static function withoutVerifying(): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function withoutVerifying(): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->withoutVerifying();
     }
 
-    public static function contentType(string $contentType): HttpRequestBuilder {
-        $builder = new HttpRequestBuilder();
+    public static function contentType(string $contentType): HttpRequestMaker {
+        $builder = new HttpRequestMaker();
         return $builder->contentType($contentType);
     }
 
     public static function createClient() {
-        return new HttpRequestBuilder();
+        return new HttpRequestMaker();
     }
 
     public static function response(array $array, int $int=200)

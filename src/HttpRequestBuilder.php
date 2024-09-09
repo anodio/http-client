@@ -13,17 +13,21 @@ class HttpRequestBuilder
         return $this;
     }
 
-    public function withBody(\Psr\Http\Message\StreamInterface|string $content, string $contentType = 'text/plain'): static {
-        $this->options['headers']['Content-Type'] = $contentType;
+    public function withBody(\Psr\Http\Message\StreamInterface|string $content, ?string $contentType = null): static {
+        if ($contentType) {
+            $this->options['headers']['Content-Type'] = $contentType;
+        }
         $this->options['body'] = $content;
         return $this;
     }
 
     public function withJson(array $data): static {
         $this->options['body'] = json_encode($data);
-        $this->options['headers'] = array_merge($this->headers??[], [
-            'Content-Type' => 'application/json'
-        ]);
+        if (isset($this->options['headers'])) {
+            $this->options['headers']['Content-Type'] = 'application/json';
+        } else {
+            $this->options['headers'] = ['Content-Type' => 'application/json'];
+        }
         return $this;
     }
 
@@ -78,13 +82,16 @@ class HttpRequestBuilder
     }
 
     public function withToken(string $token, string $type = 'Bearer'): static {
-//        $this->headers['Authorization'] = $type.' '.$token;
         $this->options['auth_bearer'] = $token;
         return $this;
     }
 
     public function withUserAgent(string|bool $userAgent): static {
-        $this->headers['User-Agent'] = $userAgent;
+        if (isset($this->options['headers'])) {
+            $this->options['headers']['User-Agent'] = $userAgent;
+        } else {
+            $this->options['headers'] = ['User-Agent' => $userAgent];
+        }
         return $this;
     }
 
@@ -110,16 +117,18 @@ class HttpRequestBuilder
     }
 
     public function contentType(string $contentType): static {
-        $this->headers['Content-Type'] = $contentType;
+        $this->options['headers']['Content-Type'] = $contentType;
         return $this;
     }
 
     public function bodyFormat(string $format)
     {
         if ($format==='json') {
-            $this->options['headers'] = array_merge($this->headers??[], [
-                'Content-Type' => 'application/json'
-            ]);
+            if (isset($this->options['headers'])) {
+                $this->options['headers']['Content-Type'] = 'application/json';
+            } else {
+                $this->options['headers'] = ['Content-Type' => 'application/json'];
+            }
         }
         return $this;
     }

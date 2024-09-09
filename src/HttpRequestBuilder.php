@@ -14,6 +14,7 @@ class HttpRequestBuilder
     }
 
     public function withBody(\Psr\Http\Message\StreamInterface|string $content, string $contentType = 'text/plain'): static {
+        $this->options['headers']['Content-Type'] = $contentType;
         $this->options['body'] = $content;
         return $this;
     }

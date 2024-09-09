@@ -81,7 +81,7 @@ class HttpRequestMaker extends HttpRequestBuilder
             foreach ($fakes as $fakeUrl=>$fake) {
                 if (str_starts_with($url, $fakeUrl)) {
                     $fakesFound[$fakeUrl] = $fake;
-                    unset($fakes[$fakeUrl]);
+                    //unset($fakes[$fakeUrl]);
                 }
             }
             if (count($fakesFound)>0) {

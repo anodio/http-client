@@ -35,7 +35,7 @@ class ComfortResponseContainer
 
     public function json(): array
     {
-        return json_decode($this->response->getContent(false), true);
+        return json_decode($this->response->getContent(false), true, 512, JSON_THROW_ON_ERROR);
     }
 
     public function status()

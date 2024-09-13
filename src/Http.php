@@ -133,9 +133,12 @@ class Http
         return new HttpRequestMaker();
     }
 
-    public static function response(array $array, int $int=200)
+    public static function response(mixed $body, int $httpCode=200)
     {
-        return new MockResponse(json_encode($array), ['http_code'=>$int]);
+        if (is_array($body) || is_object($body)) {
+            $body = json_encode($body);
+        }
+        return new MockResponse($body, ['http_code'=>$httpCode]);
     }
 
 }
